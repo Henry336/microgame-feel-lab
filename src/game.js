@@ -1,4 +1,5 @@
 import { DEFAULT_PRESET, PARAMS, PRESETS, deserializeConfig, getPresetConfig, serializeConfig } from "./config.js";
+import { CHALLENGE_ROUTE, challengeLabel, createChallengeState, updateChallengeState } from "./challenge.js";
 
 const canvas = document.querySelector("#gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -11,6 +12,7 @@ const soundToggle = document.querySelector("#soundToggle");
 const speedReadout = document.querySelector("#speedReadout");
 const stateReadout = document.querySelector("#stateReadout");
 const impactReadout = document.querySelector("#impactReadout");
+const challengeReadout = document.querySelector("#challengeReadout");
 
 let config = getPresetConfig(DEFAULT_PRESET);
 let lastTime = performance.now();
@@ -19,6 +21,7 @@ let shakeTime = 0;
 let impactCount = 0;
 const keys = new Set();
 const particles = [];
+let challenge = createChallengeState();
 
 const world = {
   ground: 456,
@@ -58,6 +61,7 @@ function resetPlayer() {
     dash: 0,
     dashCooldown: 0
   });
+  challenge = { ...createChallengeState(), bestMs: challenge.bestMs };
 }
 
 function setConfig(nextConfig, presetKey = null) {
@@ -129,6 +133,18 @@ function rectsOverlap(a, b) {
   return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
 }
 
+function challengeOverlaps() {
+  const gateHits = new Set();
+  for (const gate of CHALLENGE_ROUTE.gates) {
+    if (rectsOverlap(player, gate)) gateHits.add(gate.id);
+  }
+  return {
+    start: rectsOverlap(player, CHALLENGE_ROUTE.startPad),
+    finish: rectsOverlap(player, CHALLENGE_ROUTE.finishPad),
+    gates: gateHits
+  };
+}
+
 function moveToward(value, target, maxDelta) {
   if (value < target) return Math.min(value + maxDelta, target);
   if (value > target) return Math.max(value - maxDelta, target);
@@ -197,6 +213,7 @@ function update(dt) {
   player.x = Math.max(18, Math.min(canvas.width - player.w - 18, player.x));
   collideSolids(previousY);
   hitDummy();
+  challenge = updateChallengeState(challenge, challengeOverlaps(), dt * 1000);
 
   for (const p of particles) {
     p.life -= dt;
@@ -222,6 +239,7 @@ function draw() {
 
   ctx.fillStyle = "#33445c";
   ctx.fillRect(0, world.ground, canvas.width, 44);
+  drawChallengeRoute();
   for (const platform of world.platforms) {
     ctx.fillStyle = "#526982";
     ctx.fillRect(platform.x, platform.y, platform.w, platform.h);
@@ -250,6 +268,41 @@ function draw() {
   speedReadout.textContent = `${Math.round(Math.abs(player.vx))} px/s`;
   stateReadout.textContent = player.dash > 0 ? "Dashing" : player.grounded ? "Grounded" : "Airborne";
   impactReadout.textContent = `Impact ${impactCount}`;
+  challengeReadout.textContent = challengeLabel(challenge);
+}
+
+function drawChallengeRoute() {
+  const pulse = challenge.flashMs > 0 ? 1 : 0;
+  drawPad(CHALLENGE_ROUTE.startPad, "START", "#74f2ce", pulse);
+  drawPad(CHALLENGE_ROUTE.finishPad, "FINISH", "#ffcf5a", challenge.complete ? 1 : pulse);
+
+  for (const [index, gate] of CHALLENGE_ROUTE.gates.entries()) {
+    const passed = index < challenge.nextGateIndex || challenge.complete;
+    const next = challenge.active && index === challenge.nextGateIndex;
+    ctx.strokeStyle = passed ? "#74f2ce" : next ? "#ffcf5a" : "#70839a";
+    ctx.lineWidth = next ? 4 : 2;
+    ctx.setLineDash(next ? [8, 6] : []);
+    ctx.strokeRect(gate.x, gate.y, gate.w, gate.h);
+    ctx.setLineDash([]);
+    ctx.fillStyle = passed ? "#74f2ce" : "#cfe0f2";
+    ctx.font = "12px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(gate.label, gate.x + gate.w / 2, gate.y - 8);
+  }
+}
+
+function drawPad(pad, label, color, pulse) {
+  ctx.fillStyle = pulse ? color : "#26364b";
+  ctx.globalAlpha = pulse ? 0.45 : 1;
+  ctx.fillRect(pad.x, pad.y, pad.w, pad.h);
+  ctx.globalAlpha = 1;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.strokeRect(pad.x, pad.y, pad.w, pad.h);
+  ctx.fillStyle = color;
+  ctx.font = "12px sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText(label, pad.x + pad.w / 2, pad.y - 8);
 }
 
 function tick(now) {

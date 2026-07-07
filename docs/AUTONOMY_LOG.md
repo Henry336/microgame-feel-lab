@@ -1,5 +1,28 @@
 # Autonomy Log
 
+## 2026-07-08
+
+### Read
+
+- Reviewed README, roadmap, changelog, autonomy log, recent commits, scripts, source, and tests.
+- `gh` is still not installed, so open issues could not be inspected from this environment.
+
+### Shipped
+
+- Added a visible challenge route with start/finish pads, ordered Hop/Air/Dash gates, live route timing, and best-time feedback.
+- Split deterministic route state into `src/challenge.js` and covered it with `tests/challenge.test.js`.
+- Updated static validation and typecheck coverage for the new route module and HUD readout.
+
+### Noticed
+
+- The lab now has a repeatable task for comparing presets, but the exact gate placement has only been code-inspected, not browser-playtested in this run.
+- The route timer makes differences more legible, but A/B snapshot comparison is still missing.
+
+### Next
+
+- Play the route across every preset and adjust gate spacing where it feels unfair or too similar.
+- Add before/after feel snapshots for quick preset-versus-custom comparison.
+
 ## 2026-07-07
 
 ### Read
