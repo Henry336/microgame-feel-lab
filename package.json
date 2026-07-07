@@ -1,0 +1,12 @@
+{
+  "name": "microgame-feel-lab",
+  "version": "0.1.0",
+  "private": false,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/validate-static.js",
+    "typecheck": "node --check src/config.js && node --check src/game.js && node --check tests/config.test.js && node --check scripts/validate-static.js",
+    "test": "node tests/config.test.js",
+    "lint": "node scripts/validate-static.js"
+  }
+}

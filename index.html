@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Micro-Game Feel Lab</title>
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <main class="lab-shell">
+      <section class="stage-panel" aria-label="Playable game feel lab">
+        <div class="hud">
+          <div>
+            <h1>Micro-Game Feel Lab</h1>
+            <p id="presetNote">Snappy arcade: quick acceleration, punchy jump, readable dash.</p>
+          </div>
+          <div class="stat-strip" aria-label="Live player stats">
+            <span id="speedReadout">0 px/s</span>
+            <span id="stateReadout">Grounded</span>
+            <span id="impactReadout">Impact 0</span>
+          </div>
+        </div>
+        <canvas id="gameCanvas" width="960" height="540" aria-label="Playable tuning scene"></canvas>
+      </section>
+
+      <aside class="tuning-panel" aria-label="Tuning controls">
+        <div class="panel-header">
+          <h2>Tune Feel</h2>
+          <button id="resetButton" type="button">Reset</button>
+        </div>
+
+        <label class="select-row" for="presetSelect">
+          <span>Preset</span>
+          <select id="presetSelect"></select>
+        </label>
+
+        <div id="controlList" class="control-list"></div>
+
+        <div class="toggle-grid">
+          <label><input id="particlesToggle" type="checkbox" /> Particles</label>
+          <label><input id="soundToggle" type="checkbox" /> Sound</label>
+        </div>
+
+        <div class="button-row">
+          <button id="exportButton" type="button">Export JSON</button>
+          <button id="importButton" type="button">Import JSON</button>
+        </div>
+        <textarea id="configText" spellcheck="false" aria-label="Config JSON"></textarea>
+      </aside>
+    </main>
+
+    <script type="module" src="./src/game.js"></script>
+  </body>
+</html>
