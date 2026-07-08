@@ -8,7 +8,7 @@ for (const file of requiredFiles) {
 }
 
 const html = readFileSync("index.html", "utf8");
-for (const token of ["gameCanvas", "challengeReadout", "snapshotStatus", "toggleSnapshotButton", "./src/game.js", "./src/styles.css"]) {
+for (const token of ["gameCanvas", "challengeReadout", "splitReadout", "snapshotStatus", "toggleSnapshotButton", "./src/game.js", "./src/styles.css"]) {
   if (!html.includes(token)) {
     throw new Error(`index.html does not reference ${token}`);
   }

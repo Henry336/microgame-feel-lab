@@ -1,5 +1,5 @@
 import { DEFAULT_PRESET, PARAMS, PRESETS, deserializeConfig, getPresetConfig, serializeConfig } from "./config.js";
-import { CHALLENGE_ROUTE, challengeLabel, createChallengeState, updateChallengeState } from "./challenge.js";
+import { CHALLENGE_ROUTE, challengeLabel, createChallengeState, splitDeltaLabel, splitSummary, updateChallengeState } from "./challenge.js";
 import { applySnapshot, clearActiveSnapshot, createSnapshotState, saveSnapshot, snapshotStatus, toggleSnapshot } from "./snapshots.js";
 
 const canvas = document.querySelector("#gameCanvas");
@@ -15,6 +15,7 @@ const stateReadout = document.querySelector("#stateReadout");
 const snapshotReadout = document.querySelector("#snapshotReadout");
 const impactReadout = document.querySelector("#impactReadout");
 const challengeReadout = document.querySelector("#challengeReadout");
+const splitReadout = document.querySelector("#splitReadout");
 const snapshotStatusReadout = document.querySelector("#snapshotStatus");
 
 let config = getPresetConfig(DEFAULT_PRESET);
@@ -66,7 +67,7 @@ function resetPlayer() {
     dash: 0,
     dashCooldown: 0
   });
-  challenge = { ...createChallengeState(), bestMs: challenge.bestMs };
+  challenge = { ...createChallengeState(), bestMs: challenge.bestMs, bestSplits: challenge.bestSplits };
 }
 
 function updateSnapshotReadouts() {
@@ -289,6 +290,7 @@ function draw() {
   stateReadout.textContent = player.dash > 0 ? "Dashing" : player.grounded ? "Grounded" : "Airborne";
   impactReadout.textContent = `Impact ${impactCount}`;
   challengeReadout.textContent = challengeLabel(challenge);
+  splitReadout.textContent = splitSummary(challenge);
   snapshotReadout.textContent = snapshots.activeSlot ? `Slot ${snapshots.activeSlot}` : "Custom";
 }
 
@@ -309,6 +311,11 @@ function drawChallengeRoute() {
     ctx.font = "12px sans-serif";
     ctx.textAlign = "center";
     ctx.fillText(gate.label, gate.x + gate.w / 2, gate.y - 8);
+    if (passed) drawSplitDelta(gate.id, gate.x + gate.w / 2, gate.y + gate.h + 18);
+  }
+
+  if (challenge.complete) {
+    drawSplitDelta("finish", CHALLENGE_ROUTE.finishPad.x + CHALLENGE_ROUTE.finishPad.w / 2, CHALLENGE_ROUTE.finishPad.y + CHALLENGE_ROUTE.finishPad.h + 18);
   }
 }
 
@@ -324,6 +331,15 @@ function drawPad(pad, label, color, pulse) {
   ctx.font = "12px sans-serif";
   ctx.textAlign = "center";
   ctx.fillText(label, pad.x + pad.w / 2, pad.y - 8);
+}
+
+function drawSplitDelta(splitId, x, y) {
+  const label = splitDeltaLabel(challenge, splitId);
+  if (label === "--") return;
+  ctx.fillStyle = label.startsWith("+") ? "#ffcf5a" : "#74f2ce";
+  ctx.font = "12px sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText(label, x, y);
 }
 
 function tick(now) {

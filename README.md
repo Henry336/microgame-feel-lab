@@ -4,7 +4,7 @@ A tiny playable web app for learning game feel by tuning movement, jump, dash, h
 
 The first screen is the lab: move, jump, dash, bonk the target dummy, and adjust parameters while playing.
 
-Use the Compare panel to save two feel snapshots, apply either slot, and toggle A/B while running the route.
+Use the Compare panel to save two feel snapshots, apply either slot, and toggle A/B while running the route. After you set a best route time, the HUD and route markers show Hop/Air/Dash/Finish split deltas so tuning changes become measurable.
 
 ## Run
 

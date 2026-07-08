@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.0 - 2026-07-08
+
+- Added route split deltas for Hop, Air, Dash, and Finish after a best run exists.
+- Added deterministic split-state tests for first-run baselines and slower follow-up runs.
+- Added a compact split readout to the HUD and split labels on cleared route markers.
+
 ## 0.3.0 - 2026-07-08
 
 - Added A/B feel snapshots with Save A/B, Apply A/B, and Toggle A/B controls for quick comparison while playing.

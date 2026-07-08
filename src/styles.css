@@ -79,6 +79,11 @@ p {
   color: #dbe7f5;
 }
 
+#splitReadout {
+  min-width: 286px;
+  font-variant-numeric: tabular-nums;
+}
+
 canvas {
   width: 100%;
   max-height: calc(100vh - 104px);

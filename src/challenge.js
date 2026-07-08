@@ -8,12 +8,16 @@ export const CHALLENGE_ROUTE = Object.freeze({
   ])
 });
 
+export const SPLIT_IDS = Object.freeze([...CHALLENGE_ROUTE.gates.map((gate) => gate.id), "finish"]);
+
 export function createChallengeState() {
   return {
     active: false,
     complete: false,
     elapsedMs: 0,
     bestMs: null,
+    splitTimes: {},
+    bestSplits: null,
     nextGateIndex: 0,
     flashMs: 0
   };
@@ -34,6 +38,27 @@ export function challengeLabel(state) {
   return nextGate ? `Gate: ${nextGate.label} ${formatTime(state.elapsedMs)}` : `Finish ${formatTime(state.elapsedMs)}`;
 }
 
+export function formatDelta(ms) {
+  const sign = ms < 0 ? "-" : "+";
+  return `${sign}${formatTime(Math.abs(ms))}`;
+}
+
+export function splitDelta(state, splitId) {
+  if (!state.bestSplits || state.splitTimes[splitId] === undefined || state.bestSplits[splitId] === undefined) {
+    return null;
+  }
+  return state.splitTimes[splitId] - state.bestSplits[splitId];
+}
+
+export function splitDeltaLabel(state, splitId) {
+  const delta = splitDelta(state, splitId);
+  return delta === null ? "--" : formatDelta(delta);
+}
+
+export function splitSummary(state) {
+  return SPLIT_IDS.map((id) => `${splitName(id)} ${splitDeltaLabel(state, id)}`).join(" | ");
+}
+
 export function updateChallengeState(state, overlaps, dtMs) {
   const next = { ...state, flashMs: Math.max(0, state.flashMs - dtMs) };
 
@@ -43,6 +68,7 @@ export function updateChallengeState(state, overlaps, dtMs) {
       active: true,
       complete: false,
       elapsedMs: 0,
+      splitTimes: {},
       nextGateIndex: 0,
       flashMs: 180
     };
@@ -53,16 +79,25 @@ export function updateChallengeState(state, overlaps, dtMs) {
   next.elapsedMs = Math.round(next.elapsedMs + dtMs);
   const expectedGate = CHALLENGE_ROUTE.gates[next.nextGateIndex];
   if (expectedGate && overlaps.gates.has(expectedGate.id)) {
+    next.splitTimes = { ...next.splitTimes, [expectedGate.id]: next.elapsedMs };
     next.nextGateIndex += 1;
     next.flashMs = 180;
   }
 
   if (!CHALLENGE_ROUTE.gates[next.nextGateIndex] && overlaps.finish) {
+    next.splitTimes = { ...next.splitTimes, finish: next.elapsedMs };
     next.active = false;
     next.complete = true;
-    next.bestMs = next.bestMs === null ? next.elapsedMs : Math.min(next.bestMs, next.elapsedMs);
+    const isBest = next.bestMs === null || next.elapsedMs <= next.bestMs;
+    next.bestMs = isBest ? next.elapsedMs : next.bestMs;
+    if (isBest) next.bestSplits = { ...next.splitTimes };
     next.flashMs = 360;
   }
 
   return next;
+}
+
+function splitName(splitId) {
+  if (splitId === "finish") return "Finish";
+  return CHALLENGE_ROUTE.gates.find((gate) => gate.id === splitId)?.label ?? splitId;
 }

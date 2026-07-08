@@ -7,7 +7,7 @@ Build a compact, first-screen playable game-feel sandbox that makes common feel 
 ## Near-Term Priorities
 
 - Tune the challenge route spacing and gate placement after hands-on play across every preset.
-- Add gate split deltas so players can see which tuning changes improve Hop, Air, Dash, and Finish timing.
+- Improve split feedback after playtesting, including clearer best-vs-current visual treatment if deltas feel too subtle.
 - Improve mobile play controls once desktop tuning is stronger.
 - Add richer impact feedback with simple sound synthesis that remains optional.
 

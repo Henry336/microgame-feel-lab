@@ -1,5 +1,35 @@
 # Autonomy Log
 
+## 2026-07-08 - Gate Split Deltas
+
+### Read
+
+- Read automation memory, README, roadmap, changelog, autonomy log, recent commits, current source, tests, and local diffs.
+- Read overnight findings from `C:\Users\Henry\OneDrive\Desktop\overnight-agents\projects\microgame_opportunities.md` and `C:\Users\Henry\OneDrive\Desktop\overnight-agents\projects\top_implementation_tasks.md`.
+- `rg` is blocked by local ACLs in this environment, so repo inspection used direct PowerShell reads.
+- `gh` could not read its AppData config because of a local ACL, so open issues could not be inspected from this environment.
+
+### Overnight Recommendation
+
+- Used the recommendation to add gate split deltas because A/B snapshots were already shipped and the roadmap named measured route comparison as the next clarity gap.
+- Deferred route spacing changes because this run could improve measurable feedback deterministically without pretending a manual browser playtest had happened.
+
+### Shipped
+
+- Added Hop, Air, Dash, and Finish split timestamps to challenge state.
+- Added best-run split baselines and signed split deltas in the HUD and on cleared route markers.
+- Added deterministic tests for first-run split baselines and slower follow-up route deltas.
+
+### Noticed
+
+- Split labels make comparison measurable, but the route still needs a browser playtest across every preset to verify fairness and meaningful time differences.
+- The HUD is getting denser after Compare plus Splits; lower-frequency tuning controls may need grouping once desktop feel is validated.
+
+### Next
+
+- Browser-playtest challenge gate spacing across every preset.
+- Tune route positions only where preset differences are unfair, trivial, or hard to read.
+
 ## 2026-07-08 - A/B Snapshots
 
 ### Read
