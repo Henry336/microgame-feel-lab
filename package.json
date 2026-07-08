@@ -1,12 +1,12 @@
 {
   "name": "microgame-feel-lab",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": false,
   "type": "module",
   "scripts": {
     "build": "node scripts/validate-static.js",
-    "typecheck": "node --check src/config.js && node --check src/challenge.js && node --check src/game.js && node --check tests/config.test.js && node --check tests/challenge.test.js && node --check scripts/validate-static.js",
-    "test": "node tests/config.test.js && node tests/challenge.test.js",
+    "typecheck": "node --check src/config.js && node --check src/challenge.js && node --check src/snapshots.js && node --check src/game.js && node --check tests/config.test.js && node --check tests/challenge.test.js && node --check tests/snapshots.test.js && node --check scripts/validate-static.js",
+    "test": "node tests/config.test.js && node tests/challenge.test.js && node tests/snapshots.test.js",
     "lint": "node scripts/validate-static.js"
   }
 }

@@ -1,5 +1,6 @@
 import { DEFAULT_PRESET, PARAMS, PRESETS, deserializeConfig, getPresetConfig, serializeConfig } from "./config.js";
 import { CHALLENGE_ROUTE, challengeLabel, createChallengeState, updateChallengeState } from "./challenge.js";
+import { applySnapshot, clearActiveSnapshot, createSnapshotState, saveSnapshot, snapshotStatus, toggleSnapshot } from "./snapshots.js";
 
 const canvas = document.querySelector("#gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -11,8 +12,10 @@ const particlesToggle = document.querySelector("#particlesToggle");
 const soundToggle = document.querySelector("#soundToggle");
 const speedReadout = document.querySelector("#speedReadout");
 const stateReadout = document.querySelector("#stateReadout");
+const snapshotReadout = document.querySelector("#snapshotReadout");
 const impactReadout = document.querySelector("#impactReadout");
 const challengeReadout = document.querySelector("#challengeReadout");
+const snapshotStatusReadout = document.querySelector("#snapshotStatus");
 
 let config = getPresetConfig(DEFAULT_PRESET);
 let lastTime = performance.now();
@@ -22,6 +25,8 @@ let impactCount = 0;
 const keys = new Set();
 const particles = [];
 let challenge = createChallengeState();
+let snapshots = createSnapshotState();
+const CUSTOM_PRESET_KEY = "custom";
 
 const world = {
   ground: 456,
@@ -64,7 +69,12 @@ function resetPlayer() {
   challenge = { ...createChallengeState(), bestMs: challenge.bestMs };
 }
 
-function setConfig(nextConfig, presetKey = null) {
+function updateSnapshotReadouts() {
+  snapshotStatusReadout.textContent = snapshotStatus(snapshots);
+  snapshotReadout.textContent = snapshots.activeSlot ? `Slot ${snapshots.activeSlot}` : "Custom";
+}
+
+function setConfig(nextConfig, presetKey = null, options = {}) {
   config = { ...nextConfig };
   for (const input of controls.querySelectorAll("input[type='range']")) {
     input.value = config[input.dataset.key];
@@ -76,10 +86,20 @@ function setConfig(nextConfig, presetKey = null) {
   if (presetKey) {
     presetSelect.value = presetKey;
     presetNote.textContent = PRESETS[presetKey].note;
+  } else {
+    presetSelect.value = CUSTOM_PRESET_KEY;
+    presetNote.textContent = "Custom tuning profile.";
   }
+  if (options.clearSnapshot !== false) snapshots = clearActiveSnapshot(snapshots);
+  updateSnapshotReadouts();
 }
 
 function buildControls() {
+  const customOption = document.createElement("option");
+  customOption.value = CUSTOM_PRESET_KEY;
+  customOption.textContent = "Custom";
+  presetSelect.append(customOption);
+
   for (const [key, preset] of Object.entries(PRESETS)) {
     const option = document.createElement("option");
     option.value = key;
@@ -269,6 +289,7 @@ function draw() {
   stateReadout.textContent = player.dash > 0 ? "Dashing" : player.grounded ? "Grounded" : "Airborne";
   impactReadout.textContent = `Impact ${impactCount}`;
   challengeReadout.textContent = challengeLabel(challenge);
+  snapshotReadout.textContent = snapshots.activeSlot ? `Slot ${snapshots.activeSlot}` : "Custom";
 }
 
 function drawChallengeRoute() {
@@ -338,10 +359,32 @@ controls.addEventListener("input", (event) => {
   setConfig(config);
 });
 
-presetSelect.addEventListener("change", () => setConfig(getPresetConfig(presetSelect.value), presetSelect.value));
+presetSelect.addEventListener("change", () => {
+  if (presetSelect.value === CUSTOM_PRESET_KEY) {
+    setConfig(config);
+    return;
+  }
+  setConfig(getPresetConfig(presetSelect.value), presetSelect.value);
+});
 particlesToggle.addEventListener("change", () => setConfig({ ...config, particles: particlesToggle.checked }));
 soundToggle.addEventListener("change", () => setConfig({ ...config, sound: soundToggle.checked }));
 document.querySelector("#resetButton").addEventListener("click", () => setConfig(getPresetConfig(DEFAULT_PRESET), DEFAULT_PRESET));
+document.querySelector("#saveAButton").addEventListener("click", () => {
+  snapshots = saveSnapshot(snapshots, "A", config);
+  presetNote.textContent = "Saved current feel to slot A.";
+  updateSnapshotReadouts();
+});
+document.querySelector("#saveBButton").addEventListener("click", () => {
+  snapshots = saveSnapshot(snapshots, "B", config);
+  presetNote.textContent = "Saved current feel to slot B.";
+  updateSnapshotReadouts();
+});
+document.querySelector("#applyAButton").addEventListener("click", () => applySnapshotConfig("A"));
+document.querySelector("#applyBButton").addEventListener("click", () => applySnapshotConfig("B"));
+document.querySelector("#toggleSnapshotButton").addEventListener("click", () => {
+  const result = toggleSnapshot(snapshots);
+  applySnapshotResult(result);
+});
 document.querySelector("#exportButton").addEventListener("click", () => {
   configText.value = serializeConfig(config);
   configText.select();
@@ -354,5 +397,16 @@ document.querySelector("#importButton").addEventListener("click", () => {
     presetNote.textContent = error.message;
   }
 });
+
+function applySnapshotConfig(slot) {
+  applySnapshotResult(applySnapshot(snapshots, slot));
+}
+
+function applySnapshotResult(result) {
+  snapshots = result.state;
+  if (result.config) setConfig(result.config, null, { clearSnapshot: false });
+  presetNote.textContent = result.message;
+  updateSnapshotReadouts();
+}
 
 requestAnimationFrame(tick);

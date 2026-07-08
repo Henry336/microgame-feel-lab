@@ -17,6 +17,7 @@
           <div class="stat-strip" aria-label="Live player stats">
             <span id="speedReadout">0 px/s</span>
             <span id="stateReadout">Grounded</span>
+            <span id="snapshotReadout">Custom</span>
             <span id="impactReadout">Impact 0</span>
             <span id="challengeReadout">Route: touch start</span>
           </div>
@@ -34,6 +35,20 @@
           <span>Preset</span>
           <select id="presetSelect"></select>
         </label>
+
+        <section class="compare-panel" aria-label="A/B comparison slots">
+          <div class="compare-header">
+            <span>Compare</span>
+            <output id="snapshotStatus">Custom - A:empty B:empty</output>
+          </div>
+          <div class="compare-grid">
+            <button id="saveAButton" type="button">Save A</button>
+            <button id="saveBButton" type="button">Save B</button>
+            <button id="applyAButton" type="button">Apply A</button>
+            <button id="applyBButton" type="button">Apply B</button>
+            <button id="toggleSnapshotButton" type="button">Toggle A/B</button>
+          </div>
+        </section>
 
         <div id="controlList" class="control-list"></div>
 

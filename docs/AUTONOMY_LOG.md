@@ -1,6 +1,35 @@
 # Autonomy Log
 
-## 2026-07-08
+## 2026-07-08 - A/B Snapshots
+
+### Read
+
+- Read automation memory, README, roadmap, changelog, autonomy log, recent commits, current source, tests, and local diffs.
+- Read overnight findings from `C:\Users\Henry\OneDrive\Desktop\overnight-agents\projects\microgame_opportunities.md` and `C:\Users\Henry\OneDrive\Desktop\overnight-agents\projects\top_implementation_tasks.md`.
+- `gh` is still not installed, so open issues could not be inspected from this environment.
+
+### Overnight Recommendation
+
+- Used the recommendation to finish and validate A/B snapshot mode because the repo already had uncommitted snapshot work matching the roadmap's next priority.
+- Rejected starting gate split deltas this run because comparison needed to be completed, tested, documented, and committed first.
+
+### Shipped
+
+- Finished A/B feel snapshots with Save A/B, Apply A/B, Toggle A/B, HUD readout, and deterministic snapshot state tests.
+- Fixed snapshot status text to use ASCII separators and added an explicit Custom preset selector state for edited/imported/snapshot-applied configs.
+- Updated package version, README, changelog, roadmap, and static validation coverage for the snapshot module.
+
+### Noticed
+
+- The Compare panel is now useful for live route tuning, but it still only compares current config values, not timed gate splits.
+- The route was code-inspected as a player/designer this run; a browser playtest across every preset is still pending.
+
+### Next
+
+- Playtest gate spacing across all presets and tune any unfair jumps.
+- Add gate split deltas after the route spacing feels reliable.
+
+## 2026-07-08 - Challenge Route
 
 ### Read
 

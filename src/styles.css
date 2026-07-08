@@ -117,6 +117,38 @@ canvas {
   align-items: center;
 }
 
+.compare-panel {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #33445c;
+  border-radius: 8px;
+  background: #101722;
+}
+
+.compare-header {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: center;
+}
+
+.compare-header output {
+  color: #aab8c9;
+  font-size: 12px;
+  text-align: right;
+}
+
+.compare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.compare-grid button:last-child {
+  grid-column: 1 / -1;
+}
+
 select,
 button,
 textarea {

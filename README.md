@@ -4,6 +4,8 @@ A tiny playable web app for learning game feel by tuning movement, jump, dash, h
 
 The first screen is the lab: move, jump, dash, bonk the target dummy, and adjust parameters while playing.
 
+Use the Compare panel to save two feel snapshots, apply either slot, and toggle A/B while running the route.
+
 ## Run
 
 Open `index.html` in a browser, or serve the folder with any static server.
